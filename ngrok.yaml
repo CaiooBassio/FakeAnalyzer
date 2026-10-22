@@ -1,0 +1,8 @@
+version: 3
+agent:
+  authtoken: 3JQtzTeVgx0vF562oLMqPlIVrsy_3yBCgntuhNL47PisL6b81
+endpoints:
+  - name: your_endpoint_name
+    url: https://seldom-pampered-fringe.ngrok-free.dev
+    upstream:
+      url: 5170

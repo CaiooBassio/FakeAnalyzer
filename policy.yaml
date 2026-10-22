@@ -1,0 +1,9 @@
+on_http_request:
+  # verify webhook signatures from your provider
+  - actions:
+    - type: verify-webhook
+      config:
+        provider: instagram
+        # access your signing key from a secure ngrok vault
+        # no cleartext secrets in your policy, friend
+        secret: ${secrets.get('webhook-vault', 'instagram-secret')} # ('webhook-vault', 'github-secret')

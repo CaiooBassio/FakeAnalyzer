@@ -1,0 +1,90 @@
+﻿<Window
+    x:Class="InstaFakeAnalyzerClient.View.ViewVerificarNoticias"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Verificar Notícia"
+    Width="1200"
+    Height="700"
+    Background="White"
+    FontFamily="Segoe UI"
+    FontSize="14"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="364.497" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Título  -->
+        <TextBlock
+            Margin="0,0,0,20"
+            HorizontalAlignment="Center"
+            FontSize="24"
+            FontWeight="Bold"
+            Text="Verificar Notícia" />
+
+        <!--  Conteúdo principal com duas colunas  -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!--  Coluna esquerda: Notícia  -->
+            <StackPanel Grid.Column="0" Margin="10">
+                <TextBlock FontWeight="Bold" Text="Notícia:" />
+                <TextBox
+                    Height="300"
+                    IsReadOnly="True"
+                    Text="{Binding NoticiaSelecionada.Conteudo}"
+                    TextWrapping="Wrap"
+                    VerticalScrollBarVisibility="Auto" />
+            </StackPanel>
+
+            <!--  Coluna direita: Justificativa e controles  -->
+            <StackPanel Grid.Column="1" Margin="10">
+                <TextBlock FontWeight="Bold" Text="Justificativa:" />
+                <TextBox
+                    Height="300"
+                    AcceptsReturn="True"
+                    Text="{Binding NoticiaSelecionada.Justificativa, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="Wrap"
+                    VerticalScrollBarVisibility="Auto" />
+            </StackPanel>
+        </Grid>
+        <StackPanel
+            Grid.Row="2"
+            Grid.Column="0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <CheckBox
+                Margin="0,10,0,30"
+                Content="É Fake News?"
+                IsChecked="{Binding NoticiaSelecionada.snFalsa}" />
+
+            <StackPanel
+                Margin="0,20,0,0"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <Button
+                    Width="100"
+                    Margin="5"
+                    Background="#6c757d"
+                    Command="{Binding VoltarCommand}"
+                    Content="Voltar"
+                    Foreground="White" />
+                <Button
+                    Width="150"
+                    Height="40"
+                    Margin="5"
+                    Background="#28a745"
+                    Command="{Binding SalvarCommand}"
+                    Content="Salvar Notícia"
+                    Foreground="White" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
