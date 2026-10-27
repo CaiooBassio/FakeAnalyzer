@@ -1,24 +1,23 @@
 ﻿using InstaFakeAnalyzer.Models;
 
-namespace InstaFakeAnalyzer.Utils
+namespace InstaFakeAnalyzer.Utils;
+
+public class Sessao
 {
-    public class Sessao
+    public static Usuario usuario;
+
+    public static void Iniciar(Usuario usuarioLogado)
     {
-        public static Usuario usuario;
+        usuario = usuarioLogado;
+    }
 
-        public static void Iniciar(Usuario usuarioLogado)
-        {
-            usuario = usuarioLogado;
-        }
+    public static Usuario ObterUsuarioLogado()
+    {
+        return usuario;
+    }
 
-        public static Usuario ObterUsuarioLogado()
-        {
-            return usuario;
-        }
-
-        public static void Encerrar()
-        {
-            usuario = null;
-        }
+    public static void Encerrar()
+    {
+        usuario = null;
     }
 }

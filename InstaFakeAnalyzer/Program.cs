@@ -3,7 +3,6 @@ using InstaFakeAnalyzer.Services;
 using InstaFakeAnalyzer.Services.Analyzers;
 using InstaFakeAnalyzer.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,10 +34,7 @@ builder.Services.AddControllers();
 builder.Services.AddHttpClient<INoticiaAnalyzer, DeepSeekAnalyzer>(client =>
 {
     var baseUrl = builder.Configuration["AI:DeepSeek:BaseUrl"] ?? builder.Configuration["DEEPSEEK_BASE_URL"];
-    if (!string.IsNullOrWhiteSpace(baseUrl))
-    {
-        client.BaseAddress = new Uri(baseUrl);
-    }
+    if (!string.IsNullOrWhiteSpace(baseUrl)) client.BaseAddress = new Uri(baseUrl);
 });
 
 builder.Services.AddScoped<NoticiasService>();

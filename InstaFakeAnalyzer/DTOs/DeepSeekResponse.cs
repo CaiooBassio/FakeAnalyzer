@@ -1,8 +1,7 @@
-﻿namespace InstaFakeAnalyzer.DTOs
+﻿namespace InstaFakeAnalyzer.DTOs;
+
+public class DeepSeekResponse
 {
-    public class DeepSeekResponse
-    {
-        public string? text { get; set; }
-        public bool? fake { get; set; }
-    }
+    public string? text { get; set; }
+    public bool? fake { get; set; }
 }

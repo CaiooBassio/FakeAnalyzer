@@ -1,8 +1,7 @@
-﻿namespace InstaFakeAnalyzer.DTOs
+﻿namespace InstaFakeAnalyzer.DTOs;
+
+public class AnaliseResultado
 {
-    public class AnaliseResultado
-    {
-        public string? Text { get; set; }
-        public bool? Fake { get; set; }
-    }
+    public string? Text { get; set; }
+    public bool? Fake { get; set; }
 }
