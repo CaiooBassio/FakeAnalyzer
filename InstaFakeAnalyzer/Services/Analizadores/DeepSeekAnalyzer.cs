@@ -18,8 +18,8 @@ public class DeepSeekAnalyzer : INoticiaAnalyzer
         _configuration = configuration;
     }
 
-    public async Task<AnaliseResultado> AnalisarAsync(string texto)
-    {
+    public async Task<AnaliseResultado> AnalisarAsync(string texto) {
+
         var apiKey = _configuration["AI:DeepSeek:ApiKey"] ?? _configuration["DEEPSEEK_APIKEY"];
         var baseUrl = _configuration["AI:DeepSeek:BaseUrl"] ??
                       _configuration["DEEPSEEK_BASE_URL"] ?? "https://openrouter.ai/api/v1";

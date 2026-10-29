@@ -6,8 +6,8 @@ using InstaFakeAnalyzer.DTOs;
 
 namespace InstaFakeAnalyzer.Services;
 
-public class DeepSeekService
-{
+public class DeepSeekService {
+
     private readonly IConfiguration _configuration;
     private readonly HttpClient _httpClient;
 

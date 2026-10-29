@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using InstaFakeAnalyzer.DTOs;
 using InstaFakeAnalyzer.Models;
+using InstaFakeAnalyzer.Services;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -10,16 +11,21 @@ using Microsoft.AspNetCore.Mvc;
 
 public class InstagramWebhookController : ControllerBase
 {
-    private readonly HttpClient _client;
     private readonly IConfiguration _configuration;
+    private readonly InstagramMessageDeduplicator _messageDeduplicator;
+    private readonly InstagramMessageQueue _messageQueue;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public InstagramWebhookController(IConfiguration configuration, HttpClient client)
+    public InstagramWebhookController(
+        IConfiguration configuration,
+        InstagramMessageDeduplicator messageDeduplicator,
+        InstagramMessageQueue messageQueue,
+        IHttpClientFactory httpClientFactory)
     {
-        _client = client;
         _configuration = configuration;
-
-        var apiUrl = _configuration["ApiUrl"] ?? _configuration["Urls:ApiUrl"];
-        if (!string.IsNullOrWhiteSpace(apiUrl)) _client.BaseAddress = new Uri(apiUrl);
+        _messageDeduplicator = messageDeduplicator;
+        _messageQueue = messageQueue;
+        _httpClientFactory = httpClientFactory;
     }
 
     [HttpGet]
@@ -53,16 +59,18 @@ public class InstagramWebhookController : ControllerBase
 
                 if (entry.Messaging != null)
                     foreach (var messaging in entry.Messaging)
-                        await ProcessMessageAsync(
+                        await ProcessMessageOnceAsync(
                             entry.Id,
+                            messaging?.Message?.Mid,
                             messaging?.Sender?.Id,
                             messaging?.Message?.Text);
 
                 if (entry.Changes != null)
                     foreach (var change in entry.Changes)
                         if (string.Equals(change?.Field, "messages", StringComparison.OrdinalIgnoreCase))
-                            await ProcessMessageAsync(
+                            await ProcessMessageOnceAsync(
                                 entry.Id,
+                                change?.Value?.Message?.Mid,
                                 change?.Value?.Sender?.Id,
                                 change?.Value?.Message?.Text);
             }
@@ -76,7 +84,11 @@ public class InstagramWebhookController : ControllerBase
         return Ok();
     }
 
-    private async Task ProcessMessageAsync(string? entryId, string? senderId, string? messageText)
+    private async Task ProcessMessageOnceAsync(
+        string? entryId,
+        string? messageId,
+        string? senderId,
+        string? messageText)
     {
         if (string.IsNullOrWhiteSpace(senderId))
             return;
@@ -90,34 +102,47 @@ public class InstagramWebhookController : ControllerBase
         if (string.IsNullOrWhiteSpace(messageText))
             return;
 
+        if (string.IsNullOrWhiteSpace(messageId))
+        {
+            Console.WriteLine("Evento sem ID de mensagem; não é possível deduplicá-lo.");
+            await QueueMessageAsync(null, senderId, messageText);
+            return;
+        }
+
+        var deduplicationKey = $"{entryId ?? "unknown"}:{messageId}";
+        if (!_messageDeduplicator.TryBegin(deduplicationKey))
+        {
+            Console.WriteLine($"Evento duplicado {messageId}; ignorado.");
+            return;
+        }
+
+        try
+        {
+            await QueueMessageAsync(deduplicationKey, senderId, messageText);
+        }
+        catch
+        {
+            _messageDeduplicator.Release(deduplicationKey);
+            throw;
+        }
+    }
+
+    private async Task QueueMessageAsync(string? deduplicationKey, string senderId, string messageText)
+    {
         Console.WriteLine($"Mensagem recebida de {senderId}.");
 
         await EnviarRespostaInstagramAsync(senderId, "Sua notícia foi recebida e está sendo analisada...");
 
-        var noticia = new Noticia { Conteudo = messageText };
-        var response = await _client.PostAsJsonAsync("noticia", noticia);
-
-        if (!response.IsSuccessStatusCode)
+        if (!_messageQueue.TryEnqueue(new InstagramMessageJob(deduplicationKey, senderId, messageText)))
         {
-            var errorBody = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Erro ao chamar API interna: {errorBody}");
-            return;
+            if (deduplicationKey != null)
+                _messageDeduplicator.Release(deduplicationKey);
+
+            Console.WriteLine("Fila de análise cheia; mensagem não foi enfileirada.");
+            await EnviarRespostaInstagramAsync(
+                senderId,
+                "O serviço está ocupado no momento. Envie sua mensagem novamente daqui a pouco.");
         }
-
-        var responseBody = await response.Content.ReadAsStringAsync();
-        var resposta = JsonSerializer.Deserialize<Noticia>(responseBody, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-
-        if (resposta == null || string.IsNullOrWhiteSpace(resposta.Justificativa))
-        {
-            Console.WriteLine("Resposta da API vazia ou inválida.");
-            return;
-        }
-
-        if (await EnviarRespostaInstagramAsync(senderId, resposta.Justificativa))
-            Console.WriteLine("Resposta da análise enviada.");
     }
 
     public async Task<bool> EnviarRespostaInstagramAsync(string senderId, string resposta)
@@ -132,7 +157,7 @@ public class InstagramWebhookController : ControllerBase
 
         var pageAccessToken = rawToken.Replace("\"", "").Replace("'", "").Trim();
 
-        using var client = new HttpClient();
+        using var client = _httpClientFactory.CreateClient("InstagramGraphApi");
 
         var jsonBody = new
         {

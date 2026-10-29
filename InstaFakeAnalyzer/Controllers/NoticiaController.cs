@@ -46,7 +46,18 @@ public class NoticiaController : ControllerBase
 
         if (noticiaVerificada != null) return Ok(noticiaVerificada);
 
-        noticiaVerificada = await _noticiasService.ProcessaNoticia(noticia);
+        try
+        {
+            noticiaVerificada = await _noticiasService.ProcessaNoticia(noticia);
+        }
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException)
+        {
+            Console.Error.WriteLine($"Falha ao analisar notícia: {ex.Message}");
+            return StatusCode(StatusCodes.Status502BadGateway, new
+            {
+                erro = "O serviço de análise não retornou um resultado válido. Tente novamente."
+            });
+        }
 
         if (string.IsNullOrWhiteSpace(noticiaVerificada.Justificativa))
         {
