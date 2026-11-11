@@ -50,7 +50,8 @@ public class NoticiaController : ControllerBase
         {
             noticiaVerificada = await _noticiasService.ProcessaNoticia(noticia);
         }
-        catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or
+                                   InvalidOperationException or TaskCanceledException)
         {
             Console.Error.WriteLine($"Falha ao analisar notícia: {ex.Message}");
             return StatusCode(StatusCodes.Status502BadGateway, new

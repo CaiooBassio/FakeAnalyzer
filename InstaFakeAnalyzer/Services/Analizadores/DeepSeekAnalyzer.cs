@@ -61,7 +61,10 @@ public class DeepSeekAnalyzer : INoticiaAnalyzer
         var responseBody = await response.Content.ReadAsStringAsync();
 
         if (!response.IsSuccessStatusCode)
-            throw new Exception($"Erro ao chamar IA: {responseBody}");
+            throw new HttpRequestException(
+                $"Erro ao chamar IA (HTTP {(int)response.StatusCode}): {responseBody}",
+                null,
+                response.StatusCode);
 
         using var doc = JsonDocument.Parse(responseBody);
         var choice = doc.RootElement.GetProperty("choices")[0];

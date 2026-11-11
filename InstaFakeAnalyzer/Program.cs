@@ -8,7 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var databaseProvider = builder.Configuration["DatabaseProvider"] ?? "Postgres";
-var aiProvider = builder.Configuration["AI:Provider"] ?? "DeepSeek";
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -54,13 +53,28 @@ builder.Services.AddHttpClient<DeepSeekAnalyzer>(client =>
 });
 builder.Services.AddHttpClient<GeminiAnalyzer>();
 builder.Services.AddScoped<INoticiaAnalyzer>(serviceProvider =>
-    aiProvider.ToUpperInvariant() switch
+{
+    var primaryProvider = builder.Configuration["AI:Provider"] ?? "DeepSeek";
+    var fallbackProviders = builder.Configuration
+        .GetSection("AI:FallbackProviders")
+        .Get<string[]>() ?? [];
+    var providerNames = new[] { primaryProvider }.Concat(fallbackProviders)
+        .Select(name => name.Trim())
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToArray();
+
+    var providers = providerNames.Select(name => name.ToUpperInvariant() switch
     {
-        "DEEPSEEK" => serviceProvider.GetRequiredService<DeepSeekAnalyzer>(),
-        "GEMINI" => serviceProvider.GetRequiredService<GeminiAnalyzer>(),
+        "DEEPSEEK" => (Name: name, Analyzer: (INoticiaAnalyzer)serviceProvider.GetRequiredService<DeepSeekAnalyzer>()),
+        "GEMINI" => (Name: name, Analyzer: (INoticiaAnalyzer)serviceProvider.GetRequiredService<GeminiAnalyzer>()),
         _ => throw new InvalidOperationException(
-            $"Provedor de IA '{aiProvider}' não reconhecido. Use 'DeepSeek' ou 'Gemini'.")
+            $"Provedor de IA '{name}' não reconhecido. Use 'DeepSeek' ou 'Gemini'.")
     });
+
+    return new FailoverNoticiaAnalyzer(
+        providers,
+        serviceProvider.GetRequiredService<ILogger<FailoverNoticiaAnalyzer>>());
+});
 
 builder.Services.AddScoped<NoticiasService>();
 

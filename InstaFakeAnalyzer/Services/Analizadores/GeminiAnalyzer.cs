@@ -1,6 +1,6 @@
+using System.Net;
 using System.Text;
 using System.Text.Json;
-using System.Net;
 using InstaFakeAnalyzer.DTOs;
 using InstaFakeAnalyzer.Services.Interfaces;
 
