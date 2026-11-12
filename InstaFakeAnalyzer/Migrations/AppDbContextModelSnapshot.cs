@@ -17,18 +17,18 @@ namespace InstaFakeAnalyzer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "8.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("InstaFakeAnalyzer.Models.Noticia", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int?>("Id"));
 
                     b.Property<string>("Conteudo")
                         .HasColumnType("text");
@@ -81,6 +81,18 @@ namespace InstaFakeAnalyzer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuario");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DataCadastro = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Nome = "Administrador",
+                            NomeUsuario = "admin",
+                            Senha = "21232F297A57A5A743894A0E4A801FC3",
+                            snAtivo = true,
+                            tipoUsuario = 1
+                        });
                 });
 #pragma warning restore 612, 618
         }
