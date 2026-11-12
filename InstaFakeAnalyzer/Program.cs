@@ -40,6 +40,7 @@ builder.Services.AddHttpClient("InstagramInternalApi", client =>
     var apiUrl = builder.Configuration["ApiUrl"] ?? builder.Configuration["Urls:ApiUrl"];
     if (!string.IsNullOrWhiteSpace(apiUrl))
         client.BaseAddress = new Uri(apiUrl);
+    client.Timeout = TimeSpan.FromSeconds(90);
 });
 builder.Services.AddHttpClient("InstagramGraphApi", client =>
 {
@@ -50,8 +51,16 @@ builder.Services.AddHttpClient<DeepSeekAnalyzer>(client =>
 {
     var baseUrl = builder.Configuration["AI:DeepSeek:BaseUrl"] ?? builder.Configuration["DEEPSEEK_BASE_URL"];
     if (!string.IsNullOrWhiteSpace(baseUrl)) client.BaseAddress = new Uri(baseUrl);
+    client.Timeout = TimeSpan.FromSeconds(30);
 });
-builder.Services.AddHttpClient<GeminiAnalyzer>();
+builder.Services.AddHttpClient<GeminiAnalyzer>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(20);
+});
+builder.Services.AddHttpClient<IClaimResearcher, BraveSearchClaimResearcher>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(10);
+});
 builder.Services.AddScoped<INoticiaAnalyzer>(serviceProvider =>
 {
     var primaryProvider = builder.Configuration["AI:Provider"] ?? "DeepSeek";
@@ -73,7 +82,8 @@ builder.Services.AddScoped<INoticiaAnalyzer>(serviceProvider =>
 
     return new FailoverNoticiaAnalyzer(
         providers,
-        serviceProvider.GetRequiredService<ILogger<FailoverNoticiaAnalyzer>>());
+        serviceProvider.GetRequiredService<ILogger<FailoverNoticiaAnalyzer>>(),
+        serviceProvider.GetRequiredService<IClaimResearcher>());
 });
 
 builder.Services.AddScoped<NoticiasService>();

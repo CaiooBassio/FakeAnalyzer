@@ -81,3 +81,15 @@ O webhook deduplica eventos usando o ID `message.mid`, mantendo até 10.000 IDs 
 Após a confirmação inicial ao usuário, as análises são enfileiradas e processadas em segundo plano; o webhook não fica aguardando o Gemini antes de responder à Meta. A fila comporta até 100 mensagens em memória e é perdida se o processo da API for encerrado antes do processamento. Se a análise falhar, o bot envia uma mensagem informando que o serviço está indisponível e que o usuário pode tentar novamente.
 
 Se o Gemini devolver JSON truncado ou inválido, o analyzer repete a solicitação uma vez com um limite de saída maior. Se continuar inválido, a API retorna HTTP 502 e não salva uma análise como se tivesse sido concluída. Erros temporários do Gemini (HTTP 429, 500, 502, 503 ou 504) recebem uma repetição automática, respeitando o `Retry-After` quando enviado (com espera limitada a 5 segundos). Se o provedor continuar indisponível, a API retorna erro e a análise não é gravada como concluída.
+
+Os timeouts dos provedores são limitados para permitir o failover antes que a chamada interna do webhook expire:
+20 segundos por tentativa do Gemini, 30 segundos para DeepSeek e 90 segundos para a API interna.
+
+Antes de chamar o provedor principal ou qualquer fallback, a API pesquisa a alegação na Web usando a Brave Search API,
+independente dos provedores de IA, e passa os trechos de até cinco resultados e suas referências a todos os analyzers.
+A resposta enviada ao Instagram contém somente a síntese, sem lista de links. Se a pesquisa não retornar fontes
+utilizáveis, os analyzers recebem instrução explícita para não afirmar que a alegação foi confirmada ou desmentida.
+Configure uma chave própria da Brave Search API na variável de ambiente `AI__Research__ApiKey`; a chave do Gemini ou
+OpenRouter não serve para a busca. Região, idioma e endpoint podem ser ajustados em `AI:Research:Country`,
+`AI:Research:Language` e `AI:Research:BaseUrl`. Isso evita consumir a cota do Gemini para pesquisar, embora a análise
+de IA ainda use as chaves e cotas configuradas para Gemini/DeepSeek.
