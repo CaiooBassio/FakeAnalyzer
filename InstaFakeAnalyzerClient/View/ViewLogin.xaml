@@ -3,11 +3,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Login"
-    Width="320"
-    Height="360"
-    Background="White"
-    FontFamily="Segoe UI"
-    FontSize="14"
+    Width="480"
+    Height="620"
+    Background="#F4F0E6"
+    FontFamily="Poppins, Segoe UI"
+    FontSize="13"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     WindowStyle="SingleBorderWindow">
@@ -16,80 +16,197 @@
         <KeyBinding Key="Return" Command="{Binding LoginCommand}" />
     </Window.InputBindings>
 
-    <Grid Margin="30">
+    <Window.Resources>
+        <!-- Fontes: se Playfair Display nao estiver instalada, cai para Georgia -->
+        <FontFamily x:Key="Serif">Playfair Display, Georgia, Times New Roman</FontFamily>
+
+        <SolidColorBrush x:Key="Ink" Color="#0B0B0B" />
+        <SolidColorBrush x:Key="Sage" Color="#C8DDD0" />
+        <SolidColorBrush x:Key="PaperField" Color="#FBF9F4" />
+
+        <!-- Campo de texto: retangular, borda preta fina -->
+        <Style x:Key="FieldText" TargetType="TextBox">
+            <Setter Property="Background" Value="{StaticResource PaperField}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Ink}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="{StaticResource Ink}" />
+            <Setter Property="Padding" Value="10,9" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="Background" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Campo de senha: mesmo visual -->
+        <Style x:Key="FieldPassword" TargetType="PasswordBox">
+            <Setter Property="Background" Value="{StaticResource PaperField}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Ink}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="{StaticResource Ink}" />
+            <Setter Property="Padding" Value="10,9" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="Background" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Botao principal: retangulo preto -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource Ink}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#333333" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Linhas decorativas com ponto, como no portal -->
+        <Rectangle
+            Width="56"
+            Height="1"
+            Margin="0,180,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Fill="{StaticResource Ink}" />
+        <Ellipse
+            Width="8"
+            Height="8"
+            Margin="52,176,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Fill="{StaticResource Ink}" />
+        <Rectangle
+            Width="56"
+            Height="1"
+            Margin="0,0,0,40"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Fill="{StaticResource Ink}" />
+        <Ellipse
+            Width="8"
+            Height="8"
+            Margin="0,0,52,36"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Fill="{StaticResource Ink}" />
+
+        <!-- Logo no canto superior esquerdo -->
+        <TextBlock
+            Margin="28,20,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            FontFamily="{StaticResource Serif}"
+            FontSize="20"
+            FontWeight="Bold"
+            Foreground="{StaticResource Ink}"
+            Text="InstaFake Analyzer" />
+
         <StackPanel
-            Width="220"
+            Width="320"
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
+
             <TextBlock
-                Margin="0,10,0,50"
-                HorizontalAlignment="Center"
-                FontSize="24"
-                FontWeight="Bold"
-                Foreground="#222222"
-                Text="InstaFake Analyzer" />
-            <Grid>
+                FontFamily="{StaticResource Serif}"
+                FontSize="48"
+                Foreground="{StaticResource Ink}"
+                Text="Entrar" />
+
+            <!-- Subtitulo em italico com marca-texto verde -->
+            <TextBlock
+                Margin="0,4,0,0"
+                FontFamily="{StaticResource Serif}"
+                FontSize="18"
+                FontStyle="Italic"
+                Foreground="{StaticResource Ink}"><Run Text="acesse o " /><Run Background="{StaticResource Sage}" Text=" painel de verificação " /></TextBlock>
+
+            <TextBlock
+                Margin="0,14,0,28"
+                FontFamily="{StaticResource Serif}"
+                FontSize="12"
+                FontStyle="Italic"
+                Foreground="#444444"
+                Text="Revise as notícias analisadas pela IA e confirme o veredito."
+                TextWrapping="Wrap" />
+
+            <Grid Margin="0,0,0,14">
                 <TextBox
                     x:Name="txtUsuario"
-                    Width="220"
-                    Margin="0,0,0,15"
-                    Padding="8"
-                    Background="#F5F5F5"
-                    BorderBrush="#CCCCCC"
-                    BorderThickness="1"
-                    Foreground="#999999"
+                    Style="{StaticResource FieldText}"
                     Text="{Binding NomeUsuario}"
                     TextChanged="txtUsuario_TextChanged" />
-
                 <TextBlock
                     x:Name="placeholderUsuario"
-                    Margin="12,0,0,15"
+                    Margin="12,0,0,0"
                     VerticalAlignment="Center"
-                    FontSize="14"
-                    Foreground="Gray"
+                    FontSize="13"
+                    Foreground="#7A7A7A"
                     IsHitTestVisible="False"
-                    Text="Nome de Usuario" />
-
+                    Text="Nome de Usuário" />
             </Grid>
-            <Grid>
+
+            <Grid Margin="0,0,0,0">
                 <PasswordBox
                     x:Name="txtSenha"
-                    Width="220"
-                    Margin="0,0,0,20"
-                    Padding="8"
-                    Background="#F5F5F5"
-                    BorderBrush="#CCCCCC"
-                    BorderThickness="1"
-                    PasswordChanged="txtSenha_PasswordChanged" />
-
+                    PasswordChanged="txtSenha_PasswordChanged"
+                    Style="{StaticResource FieldPassword}" />
                 <TextBlock
                     x:Name="placeholderSenha"
-                    Margin="12,0,0,20"
+                    Margin="12,0,0,0"
                     VerticalAlignment="Center"
-                    FontSize="14"
-                    Foreground="Gray"
+                    FontSize="13"
+                    Foreground="#7A7A7A"
                     IsHitTestVisible="False"
                     Text="Senha" />
-
             </Grid>
 
             <Button
                 x:Name="btnLogin"
-                Height="36"
-                Margin="0,20,0,10"
-                Background="#0078D7"
-                BorderThickness="0"
+                Height="42"
+                Margin="0,24,0,0"
                 Command="{Binding LoginCommand}"
-                Content="Login"
-                Cursor="Hand"
-                FontWeight="SemiBold"
-                Foreground="White">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="20" />
-                    </Style>
-                </Button.Resources>
-            </Button>
+                Content="Entrar"
+                Style="{StaticResource PrimaryButton}" />
         </StackPanel>
     </Grid>
 </Window>
