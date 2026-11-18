@@ -5,86 +5,268 @@
     Title="Verificar Notícia"
     Width="1200"
     Height="700"
-    Background="White"
-    FontFamily="Segoe UI"
+    Background="#F4F0E7"
+    FontFamily="Georgia"
     FontSize="14"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen">
 
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="364.497" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Window.Resources>
 
-        <!--  Título  -->
+        <!-- Estilo dos campos de texto -->
+        <Style x:Key="CampoTexto" TargetType="TextBox">
+            <Setter Property="Padding" Value="14,12"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Foreground" Value="#222222"/>
+            <Setter Property="Background" Value="#FAF9F6"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+        </Style>
+
+        <!-- Estilo dos rótulos -->
+        <Style x:Key="RotuloCampo" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#222222"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <!-- Botão principal -->
+        <Style x:Key="BotaoPrincipal" TargetType="Button">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Background" Value="Black"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#333333"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Botão secundário -->
+        <Style x:Key="BotaoSecundario" TargetType="Button">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E5E0D6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid ClipToBounds="True">
+
+        <!-- Marca do sistema -->
         <TextBlock
-            Margin="0,0,0,20"
-            HorizontalAlignment="Center"
-            FontSize="24"
+            Margin="35,22,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            FontSize="26"
             FontWeight="Bold"
-            Text="Verificar Notícia" />
+            Text="InstaFake Analyzer"/>
 
-        <!--  Conteúdo principal com duas colunas  -->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <!-- Decoração lateral -->
+        <Canvas
+            Margin="0,195,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top">
 
-            <!--  Coluna esquerda: Notícia  -->
-            <StackPanel Grid.Column="0" Margin="10">
-                <TextBlock FontWeight="Bold" Text="Notícia:" />
-                <TextBox
-                    Height="300"
-                    IsReadOnly="True"
-                    Text="{Binding NoticiaSelecionada.Conteudo}"
-                    TextWrapping="Wrap"
-                    VerticalScrollBarVisibility="Auto" />
-            </StackPanel>
+            <Line
+                X1="0"
+                Y1="0"
+                X2="70"
+                Y2="0"
+                Stroke="Black"
+                StrokeThickness="1"/>
 
-            <!--  Coluna direita: Justificativa e controles  -->
-            <StackPanel Grid.Column="1" Margin="10">
-                <TextBlock FontWeight="Bold" Text="Justificativa:" />
-                <TextBox
-                    Height="300"
-                    AcceptsReturn="True"
-                    Text="{Binding NoticiaSelecionada.Justificativa, UpdateSourceTrigger=PropertyChanged}"
-                    TextWrapping="Wrap"
-                    VerticalScrollBarVisibility="Auto" />
-            </StackPanel>
-        </Grid>
-        <StackPanel
-            Grid.Row="2"
-            Grid.Column="0"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
-            <CheckBox
-                Margin="0,10,0,30"
-                Content="É Fake News?"
-                IsChecked="{Binding NoticiaSelecionada.snFalsa}" />
+            <Ellipse
+                Width="10"
+                Height="10"
+                Canvas.Left="65"
+                Canvas.Top="-5"
+                Fill="Black"/>
+        </Canvas>
 
+        <!-- Conteúdo principal -->
+        <Grid
+            Margin="75,105,75,55">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Título -->
+            <TextBlock
+                Grid.Row="0"
+                FontSize="49"
+                Foreground="Black"
+                Text="Verificar Notícia"/>
+
+            <!-- Subtítulo -->
             <StackPanel
-                Margin="0,20,0,0"
-                HorizontalAlignment="Center"
+                Grid.Row="1"
+                Margin="0,0,0,8"
                 Orientation="Horizontal">
-                <Button
-                    Width="100"
-                    Margin="5"
-                    Background="#6c757d"
-                    Command="{Binding VoltarCommand}"
-                    Content="Voltar"
-                    Foreground="White" />
-                <Button
-                    Width="150"
-                    Height="40"
-                    Margin="5"
-                    Background="#28a745"
-                    Command="{Binding SalvarCommand}"
-                    Content="Salvar Notícia"
-                    Foreground="White" />
+
+                <TextBlock
+                    FontSize="20"
+                    FontStyle="Italic"
+                    Text="analise o conteúdo e "/>
+
+                <Border
+                    Padding="4,0"
+                    Background="#D8E9E5">
+
+                    <TextBlock
+                        FontSize="20"
+                        FontStyle="Italic"
+                        Text="registre sua avaliação"/>
+                </Border>
             </StackPanel>
-        </StackPanel>
+
+            <!-- Descrição -->
+            <TextBlock
+                Grid.Row="2"
+                Margin="0,8,0,25"
+                FontSize="14"
+                FontStyle="Italic"
+                Foreground="#333333"
+                Text="Leia a notícia, avalie as informações e registre a justificativa da análise."
+                TextWrapping="Wrap"/>
+
+            <!-- Duas colunas -->
+            <Grid Grid.Row="3">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="25"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Coluna esquerda: Notícia -->
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Style="{StaticResource RotuloCampo}"
+                        Text="Conteúdo da Notícia"/>
+
+                    <TextBox
+                        Grid.Row="1"
+                        Style="{StaticResource CampoTexto}"
+                        IsReadOnly="True"
+                        Text="{Binding NoticiaSelecionada.Conteudo}"/>
+                </Grid>
+
+                <!-- Coluna direita: Justificativa -->
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Style="{StaticResource RotuloCampo}"
+                        Text="Justificativa"/>
+
+                    <TextBox
+                        Grid.Row="1"
+                        Style="{StaticResource CampoTexto}"
+                        AcceptsReturn="True"
+                        Text="{Binding NoticiaSelecionada.Justificativa, UpdateSourceTrigger=PropertyChanged}"/>
+                </Grid>
+
+            </Grid>
+
+            <!-- Classificação -->
+            <CheckBox
+                Grid.Row="4"
+                Margin="0,22,0,20"
+                VerticalAlignment="Center"
+                FontFamily="Segoe UI"
+                FontSize="15"
+                Foreground="#222222"
+                Content="Esta notícia é Fake News?"
+                IsChecked="{Binding NoticiaSelecionada.snFalsa}"/>
+
+            <!-- Botões -->
+            <Grid
+                Grid.Row="5"
+                HorizontalAlignment="Right">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="160"/>
+                    <ColumnDefinition Width="15"/>
+                    <ColumnDefinition Width="180"/>
+                </Grid.ColumnDefinitions>
+
+                <Button
+                    Grid.Column="0"
+                    Style="{StaticResource BotaoSecundario}"
+                    Command="{Binding VoltarCommand}"
+                    Content="Voltar"/>
+
+                <Button
+                    Grid.Column="2"
+                    Style="{StaticResource BotaoPrincipal}"
+                    Command="{Binding SalvarCommand}"
+                    Content="Salvar Notícia"/>
+
+            </Grid>
+
+        </Grid>
+
+        <!-- Decoração inferior direita -->
+        <Canvas
+            Margin="0,0,0,35"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom">
+
+            <Line
+                X1="0"
+                Y1="0"
+                X2="70"
+                Y2="0"
+                Stroke="Black"
+                StrokeThickness="1"/>
+
+            <Ellipse
+                Width="10"
+                Height="10"
+                Canvas.Left="-5"
+                Canvas.Top="-5"
+                Fill="Black"/>
+        </Canvas>
+
     </Grid>
 </Window>

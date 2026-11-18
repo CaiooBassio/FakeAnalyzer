@@ -4,118 +4,212 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:InstaFakeAnalyzerClient.View"
     Title="Dashboard"
-    Width="400"
-    Height="500"
-    Background="White"
-    FontFamily="Segoe UI"
+    Width="580"
+    Height="830"
+    Background="#F4F0E7"
+    FontFamily="Georgia"
     FontSize="14"
     ResizeMode="NoResize"
     WindowStartupLocation="CenterScreen"
     WindowStyle="SingleBorderWindow">
 
-    <Grid Margin="30">
+    <Window.Resources>
+
+        <!-- Estilo dos botões principais -->
+        <Style x:Key="BotaoPrincipal" TargetType="Button">
+            <Setter Property="Height" Value="55"/>
+            <Setter Property="Margin" Value="0,0,0,14"/>
+            <Setter Property="Background" Value="Black"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#333333"/>
+                </Trigger>
+
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#555555"/>
+                </Trigger>
+
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Estilo do botão de logout -->
+        <Style x:Key="BotaoLogout" TargetType="Button">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Margin" Value="0,10,0,0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E5E0D6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid ClipToBounds="True">
+
+        <!-- Nome do sistema -->
+        <TextBlock
+            Margin="35,22,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            FontSize="26"
+            FontWeight="Bold"
+            Text="InstaFake Analyzer"/>
+
+        <!-- Decoração lateral -->
+        <Canvas
+            Margin="0,220,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top">
+
+            <Line
+                X1="0"
+                Y1="0"
+                X2="70"
+                Y2="0"
+                Stroke="Black"
+                StrokeThickness="1"/>
+
+            <Ellipse
+                Width="10"
+                Height="10"
+                Canvas.Left="65"
+                Canvas.Top="-5"
+                Fill="Black"/>
+        </Canvas>
+
+        <!-- Conteúdo principal -->
         <StackPanel
-            Width="250"
-            Margin="20"
+            Width="400"
+            Margin="0,125,0,0"
             HorizontalAlignment="Center"
-            VerticalAlignment="Center">
+            VerticalAlignment="Top">
 
+            <!-- Título -->
             <TextBlock
-                Height="60"
-                Margin="0,0,0,20"
-                FontSize="20"
-                FontWeight="Bold"
-                Foreground="#333"
-                Text="{Binding Saudacao}"
-                TextAlignment="Center" />
+                FontSize="57"
+                Text="Painel"
+                Foreground="Black"/>
 
+            <!-- Subtítulo -->
+            <StackPanel
+                Margin="0,-2,0,0"
+                Orientation="Horizontal">
+
+                <TextBlock
+                    FontSize="20"
+                    FontStyle="Italic"
+                    Text="acesse suas "/>
+
+                <Border
+                    Padding="4,0"
+                    Background="#D8E9E5">
+
+                    <TextBlock
+                        FontSize="20"
+                        FontStyle="Italic"
+                        Text="funcionalidades"/>
+                </Border>
+            </StackPanel>
+
+            <!-- Saudação -->
+            <TextBlock
+                Margin="0,20,0,8"
+                FontFamily="Segoe UI"
+                FontSize="19"
+                FontWeight="SemiBold"
+                Foreground="#222222"
+                Text="{Binding Saudacao}"
+                TextWrapping="Wrap"/>
+
+            <!-- Descrição -->
+            <TextBlock
+                Margin="0,0,0,30"
+                FontSize="14"
+                FontStyle="Italic"
+                Foreground="#333333"
+                Text="Selecione uma das opções abaixo para continuar."
+                TextWrapping="Wrap"/>
+
+            <!-- Verificar notícias -->
             <Button
-                Height="40"
-                Margin="0,15,0,0"
-                Background="#0078D7"
-                BorderThickness="0"
+                Style="{StaticResource BotaoPrincipal}"
                 Command="{Binding VerificarCommand}"
                 Content="Verificar Notícias"
-                Cursor="Hand"
-                FontWeight="SemiBold"
-                Foreground="White"
-                Visibility="{Binding VerificarVisibility}">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="20" />
-                    </Style>
-                </Button.Resources>
-            </Button>
+                Visibility="{Binding VerificarVisibility}"/>
 
+            <!-- Cadastrar usuário -->
             <Button
-                Height="40"
-                Margin="0,15,0,0"
-                Background="#0078D7"
-                BorderThickness="0"
+                Style="{StaticResource BotaoPrincipal}"
                 Command="{Binding CadastrarCommand}"
                 Content="Cadastrar Usuário"
-                Cursor="Hand"
-                FontWeight="SemiBold"
-                Foreground="White"
-                Visibility="{Binding CadastrarVisibility}">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="20" />
-                    </Style>
-                </Button.Resources>
-            </Button>
+                Visibility="{Binding CadastrarVisibility}"/>
 
+            <!-- ChatBot -->
             <Button
-                Height="40"
-                Margin="0,15,0,0"
-                Background="#0078D7"
-                BorderThickness="0"
+                Style="{StaticResource BotaoPrincipal}"
                 Command="{Binding FalarComChatBotCommand}"
-                Content="Falar com ChatBot"
-                Cursor="Hand"
-                FontWeight="SemiBold"
-                Foreground="White">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="20" />
-                    </Style>
-                </Button.Resources>
-            </Button>
+                Content="Falar com ChatBot"/>
 
+            <!-- Definir Agente de IA -->
             <Button
-                Height="40"
-                Margin="0,15,0,0"
-                Background="#0078D7"
-                BorderThickness="0"
+                Style="{StaticResource BotaoPrincipal}"
+                Content="Definir Agente de IA"/>
+
+            <!-- Enviar notícia -->
+            <Button
+                Style="{StaticResource BotaoPrincipal}"
                 Command="{Binding EnviarNoticiaCommand}"
-                Content="Enviar Nova Notícia"
-                Cursor="Hand"
-                FontWeight="SemiBold"
-                Foreground="White">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="20" />
-                    </Style>
-                </Button.Resources>
-            </Button>
+                Content="Enviar Nova Notícia"/>
 
+            <!-- Logout -->
             <Button
-                Height="40"
-                Margin="0,15,0,0"
-                Background="#D9534F"
-                BorderThickness="0"
+                Style="{StaticResource BotaoLogout}"
                 Command="{Binding LogoutCommand}"
-                Content="Logout"
-                Cursor="Hand"
-                FontWeight="SemiBold"
-                Foreground="White">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="20" />
-                    </Style>
-                </Button.Resources>
-            </Button>
+                Content="Sair da Conta"/>
 
         </StackPanel>
+
+        <!-- Decoração inferior direita -->
+        <Canvas
+            Margin="0,0,0,45"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom">
+
+            <Line
+                X1="0"
+                Y1="0"
+                X2="70"
+                Y2="0"
+                Stroke="Black"
+                StrokeThickness="1"/>
+
+            <Ellipse
+                Width="10"
+                Height="10"
+                Canvas.Left="-5"
+                Canvas.Top="-5"
+                Fill="Black"/>
+        </Canvas>
+
     </Grid>
 </Window>
