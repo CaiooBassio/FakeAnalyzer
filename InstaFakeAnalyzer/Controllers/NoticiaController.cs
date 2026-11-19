@@ -39,16 +39,15 @@ public class NoticiaController : ControllerBase
         if (string.IsNullOrWhiteSpace(conteudo))
             return BadRequest(new { erro = "Campo 'Conteudo' obrigatório." });
 
-        var noticia = new Noticia { Conteudo = conteudo };
-
         var noticiaVerificada = await _context.Noticia
-            .FirstOrDefaultAsync(n => n.Conteudo == noticia.Conteudo);
+            .FirstOrDefaultAsync(n => n.Conteudo == conteudo);
+        var noticiaNova = noticiaVerificada == null;
 
-        if (noticiaVerificada != null) return Ok(noticiaVerificada);
-
+        Noticia analiseAtualizada;
         try
         {
-            noticiaVerificada = await _noticiasService.ProcessaNoticia(noticia);
+            analiseAtualizada = await _noticiasService.ProcessaNoticia(
+                new Noticia { Conteudo = conteudo });
         }
         catch (Exception ex) when (ex is HttpRequestException or JsonException or
                                    InvalidOperationException or TaskCanceledException)
@@ -60,15 +59,27 @@ public class NoticiaController : ControllerBase
             });
         }
 
-        if (string.IsNullOrWhiteSpace(noticiaVerificada.Justificativa))
+        if (string.IsNullOrWhiteSpace(analiseAtualizada.Justificativa))
         {
-            noticiaVerificada.Justificativa = "Não obtivemos nenhuma resposta, tente novamente.";
-            return Ok(noticiaVerificada);
+            return StatusCode(StatusCodes.Status502BadGateway, new
+            {
+                erro = "O serviço de análise não retornou um resultado válido. Tente novamente."
+            });
         }
 
-        _context.Noticia.Add(noticiaVerificada);
-        await _context.SaveChangesAsync();
+        if (noticiaNova)
+        {
+            noticiaVerificada = analiseAtualizada;
+            _context.Noticia.Add(noticiaVerificada);
+        }
+        else
+        {
+            noticiaVerificada!.Justificativa = analiseAtualizada.Justificativa;
+            noticiaVerificada.snFalsa = analiseAtualizada.snFalsa;
+            noticiaVerificada.snAnalizada = analiseAtualizada.snAnalizada;
+        }
 
+        await _context.SaveChangesAsync();
         return Ok(noticiaVerificada);
     }
 
